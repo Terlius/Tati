@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Para Tatiana</title>
+<style>
+  :root{
+    --bg: #F3EEE2;
+    --bg-soft: #ECE4D2;
+    --paper: #FBF8F0;
+    --ink: #33301F;
+    --ink-soft: #746C52;
+    --line: #D9CFB4;
+    --petal: #F6C445;
+    --petal-deep: #E8A324;
+    --petal-shadow: #C97F1B;
+    --center: #A85A2C;
+    --center-dark: #7C4019;
+    --stem: #5C7A4C;
+    --stem-dark: #3E5A34;
+    --leaf: #6E8C58;
+    --accent: #B8562F;
+    --shadow: rgba(90, 70, 30, 0.16);
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #1B1C16;
+      --bg-soft: #23241C;
+      --paper: #24251D;
+      --ink: #EDE7D6;
+      --ink-soft: #A79E85;
+      --line: #3A3B2E;
+      --petal: #F7C954;
+      --petal-deep: #E9A72A;
+      --petal-shadow: #B67A1E;
+      --center: #C06A34;
+      --center-dark: #8A481F;
+      --stem: #7C9A67;
+      --stem-dark: #56714A;
+      --leaf: #86A66E;
+      --accent: #E2925F;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  :root[data-theme="dark"]{
+    --bg: #1B1C16;
+    --bg-soft: #23241C;
+    --paper: #24251D;
+    --ink: #EDE7D6;
+    --ink-soft: #A79E85;
+    --line: #3A3B2E;
+    --petal: #F7C954;
+    --petal-deep: #E9A72A;
+    --petal-shadow: #B67A1E;
+    --center: #C06A34;
+    --center-dark: #8A481F;
+    --stem: #7C9A67;
+    --stem-dark: #56714A;
+    --leaf: #86A66E;
+    --accent: #E2925F;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin: 0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 20% 10%, var(--bg-soft) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 90%, var(--bg-soft) 0%, transparent 50%);
+    color: var(--ink);
+    font-family: "Nunito", "Segoe UI", system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 48px 20px;
+    min-height: 100%;
+  }
+
+  .card{
+    width: 100%;
+    max-width: 620px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    box-shadow: 0 30px 60px -25px var(--shadow);
+    padding: 56px 40px 48px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .eyebrow{
+    font-family: "Nunito", sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 28px;
+  }
+
+  .stage{
+    position: relative;
+    width: min(280px, 68vw);
+    aspect-ratio: 1 / 1.15;
+    margin: 0 auto 8px;
+  }
+
+  .petals{
+    transform-origin: 140px 210px;
+    animation: sway 6s ease-in-out infinite;
+  }
+
+  .bloom{
+    transform-origin: 140px 148px;
+    animation: breathe 4.5s ease-in-out infinite;
+  }
+
+  @keyframes sway{
+    0%, 100% { transform: rotate(-2.2deg); }
+    50% { transform: rotate(2.2deg); }
+  }
+
+  @keyframes breathe{
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.035); }
+  }
+
+  @keyframes spin-slow{
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .petal-set{
+    animation: spin-slow 26s linear infinite;
+    transform-origin: 140px 148px;
+  }
+
+  .leaf-left{
+    transform-origin: 118px 232px;
+    animation: leaf-wag 6s ease-in-out infinite;
+  }
+  .leaf-right{
+    transform-origin: 162px 248px;
+    animation: leaf-wag 6s ease-in-out infinite reverse;
+  }
+  @keyframes leaf-wag{
+    0%, 100% { transform: rotate(-4deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  .petal{
+    transform: rotate(var(--rot));
+    transform-origin: 140px 148px;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .petal:focus-visible{
+    outline: 2px solid var(--center-dark);
+    outline-offset: 2px;
+  }
+  .petal.falling{
+    animation: petal-fall 0.9s ease-in forwards;
+  }
+  @keyframes petal-fall{
+    0%   { transform: rotate(var(--rot)); opacity: 1; }
+    100% {
+      transform: rotate(var(--rot)) translateY(-6px) rotate(calc(-1 * var(--rot))) translateY(130px) rotate(210deg);
+      opacity: 0;
+    }
+  }
+  .petal.gone{
+    opacity: 0;
+    pointer-events: none;
+  }
+  .petal.regrow{
+    animation: petal-regrow 0.6s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes petal-regrow{
+    0%   { transform: rotate(var(--rot)) scale(0.15); opacity: 0; }
+    100% { transform: rotate(var(--rot)) scale(1); opacity: 1; }
+  }
+
+  .burst-petal{
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--petal);
+    border-radius: 0 60% 0 60%;
+    pointer-events: none;
+    animation: burst-fall 1s ease-in forwards;
+  }
+  @keyframes burst-fall{
+    0%   { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.95; }
+    100% { transform: translate(var(--bx, 0px), var(--by, 90px)) rotate(var(--br, 180deg)) scale(0.7); opacity: 0; }
+  }
+
+  .reveal{
+    min-height: 2.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 12px;
+    margin: 2px 0 4px;
+    font-family: "Dancing Script", "Segoe Script", cursive;
+    font-size: clamp(1.3rem, 5.5vw, 1.9rem);
+    line-height: 1.15;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .reveal.show{
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .hint{
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    margin: -2px 0 6px;
+    opacity: 0.75;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .petal.falling, .petal.regrow, .burst-petal{
+      animation: none !important;
+    }
+    .petal.falling{
+      opacity: 0;
+    }
+  }
+
+  .petal-fall{
+    position: absolute;
+    top: -10%;
+    width: 14px;
+    height: 14px;
+    background: var(--petal);
+    border-radius: 0 60% 0 60%;
+    opacity: 0.85;
+    animation: fall linear infinite;
+  }
+  @keyframes fall{
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.85; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(420px) rotate(220deg); opacity: 0; }
+  }
+
+  h1{
+    font-family: "Playfair Display", "Georgia", serif;
+    font-weight: 600;
+    font-size: clamp(1.6rem, 5vw, 2.05rem);
+    margin: 6px 0 2px;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+
+  .signature{
+    font-family: "Dancing Script", "Segoe Script", cursive;
+    font-size: clamp(3.2rem, 13vw, 4.4rem);
+    line-height: 1;
+    color: var(--accent);
+    margin: 10px 0 18px;
+  }
+
+  .rule{
+    width: 64px;
+    height: 2px;
+    background: var(--line);
+    margin: 0 auto 26px;
+    border-radius: 2px;
+  }
+
+  p.message{
+    font-family: "Playfair Display", Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.08rem, 3vw, 1.28rem);
+    line-height: 1.6;
+    color: var(--ink);
+    max-width: 46ch;
+    margin: 0 auto 22px;
+    text-wrap: balance;
+  }
+
+  p.sub{
+    font-family: "Nunito", sans-serif;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    max-width: 42ch;
+    margin: 0 auto;
+  }
+
+  .date{
+    margin-top: 34px;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .keepsake{
+    margin: 30px auto 0;
+    max-width: 240px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 10px 16px;
+    box-shadow: 0 16px 30px -18px var(--shadow);
+    transform: rotate(-2deg);
+  }
+  .keepsake img{
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+  }
+  .keepsake figcaption{
+    margin-top: 10px;
+    font-family: "Dancing Script", "Segoe Script", cursive;
+    font-size: 1.1rem;
+    color: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .petals, .bloom, .petal-set, .leaf-left, .leaf-right, .petal-fall{
+      animation: none !important;
+    }
+  }
+
+  @media (max-width: 420px){
+    .card{ padding: 44px 22px 36px; border-radius: 22px; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Dancing+Script:wght@600;700&family=Nunito:wght@400;600;700&display=swap">
+
+</head>
+<body>
+<div class="card">
+  <div id="fallLayer"></div>
+  <p class="eyebrow">Día de las Flores Amarillas</p>
+
+  <div class="stage">
+    <svg viewBox="0 0 280 320" width="100%" height="100%" role="img" aria-label="Flor amarilla animada">
+      <defs>
+        <radialGradient id="petalGrad" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stop-color="var(--petal)"/>
+          <stop offset="100%" stop-color="var(--petal-deep)"/>
+        </radialGradient>
+        <radialGradient id="centerGrad" cx="40%" cy="35%" r="70%">
+          <stop offset="0%" stop-color="var(--center)"/>
+          <stop offset="100%" stop-color="var(--center-dark)"/>
+        </radialGradient>
+        <linearGradient id="stemGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="var(--stem)"/>
+          <stop offset="100%" stop-color="var(--stem-dark)"/>
+        </linearGradient>
+      </defs>
+
+      <g class="petals">
+        <path d="M140 232 C 132 195, 132 165, 140 232 Z" fill="none"/>
+        <path d="M140 210 C 122 250, 118 300, 140 320 C 162 300, 158 250, 140 210 Z" fill="url(#stemGrad)"/>
+        <path class="leaf-left" d="M120 258 C 92 254, 74 268, 68 292 C 96 292, 116 280, 120 258 Z" fill="var(--leaf)"/>
+        <path class="leaf-right" d="M160 274 C 188 266, 206 278, 214 300 C 186 302, 166 292, 160 274 Z" fill="var(--leaf)"/>
+      </g>
+
+      <g class="bloom">
+        <g class="petal-set" fill="url(#petalGrad)" stroke="var(--petal-shadow)" stroke-width="1.5">
+          <g class="petal" style="--rot:0deg"   tabindex="0" role="button" aria-label="Toca el pétalo para ver un mensaje"><ellipse cx="140" cy="88" rx="22" ry="42"/></g>
+          <g class="petal" style="--rot:45deg"  tabindex="0" role="button" aria-label="Toca el pétalo para ver un mensaje"><ellipse cx="140" cy="88" rx="22" ry="42"/></g>
+          <g class="petal" style="--rot:90deg"  tabindex="0" role="button" aria-label="Toca el pétalo para ver un mensaje"><ellipse cx="140" cy="88" rx="22" ry="42"/></g>
+          <g class="petal" style="--rot:135deg" tabindex="0" role="button" aria-label="Toca el pétalo para ver un mensaje"><ellipse cx="140" cy="88" rx="22" ry="42"/></g>
+          <g class="petal" style="--rot:180deg" tabindex="0" role="button" aria-label="Toca el pétalo para ver un mensaje"><ellipse cx="140" cy="88" rx="22" ry="42"/></g>
+          <g class="petal" style="--rot:225deg" tabindex="0" role="button" aria-label="Toca el pétalo para ver un mensaje"><ellipse cx="140" cy="88" rx="22" ry="42"/></g>
+          <g class="petal" style="--rot:270deg" tabindex="0" role="button" aria-label="Toca el pétalo para ver un mensaje"><ellipse cx="140" cy="88" rx="22" ry="42"/></g>
+          <g class="petal" style="--rot:315deg" tabindex="0" role="button" aria-label="Toca el pétalo para ver un mensaje"><ellipse cx="140" cy="88" rx="22" ry="42"/></g>
+        </g>
+        <circle cx="140" cy="148" r="26" fill="url(#centerGrad)"/>
+        <g fill="var(--center-dark)" opacity="0.55">
+          <circle cx="130" cy="140" r="1.6"/>
+          <circle cx="148" cy="138" r="1.4"/>
+          <circle cx="140" cy="152" r="1.7"/>
+          <circle cx="150" cy="154" r="1.3"/>
+          <circle cx="132" cy="156" r="1.4"/>
+          <circle cx="146" cy="146" r="1.2"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <p class="hint">toca un pétalo ✿</p>
+  <div class="reveal" id="reveal" aria-live="polite"></div>
+
+  <div class="signature">Tatiana</div>
+  <div class="rule"></div>
+
+  <p class="message">
+    Eres una madre excepcional y una mujer increíble.
+  </p>
+  <p class="sub">
+    Me encanta haberte conocido y tenerte en mi vida. Quiero que seas la mujer
+    más feliz del mundo, tú y esa hijita hermosa que tienes, porque las dos
+    merecen solo cosas bonitas. Contigo hasta los días comunes se sienten
+    especiales, y espero seguir escribiendo mil historias más a tu lado.
+    Feliz día de las flores amarillas.
+  </p>
+
+  <figure class="keepsake">
+    <img src="kanokon.jpg" alt="Imagen que quisiste agregar" loading="lazy">
+    <figcaption>para ti</figcaption>
+  </figure>
+
+  <p class="date">21 de septiembre</p>
+</div>
+
+<script>
+(function(){
+  try{
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    var layer = document.getElementById('fallLayer');
+    if (!layer) return;
+    layer.style.position = 'absolute';
+    layer.style.inset = '0';
+    layer.style.pointerEvents = 'none';
+    layer.style.overflow = 'hidden';
+    var n = 10;
+    for (var i = 0; i < n; i++){
+      var p = document.createElement('div');
+      p.className = 'petal-fall';
+      p.style.left = (5 + Math.random() * 90) + '%';
+      p.style.animationDuration = (9 + Math.random() * 6) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.opacity = (0.5 + Math.random() * 0.4).toString();
+      layer.appendChild(p);
+    }
+  } catch(e) {}
+})();
+
+(function(){
+  try{
+    var card = document.querySelector('.card');
+    var stage = document.querySelector('.stage');
+    var reveal = document.getElementById('reveal');
+    var petals = document.querySelectorAll('.petal');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var words = [
+      'Hermosha', 'Lindota', 'Care monda',
+      'Preciosura', 'Eres la mejor', 'Me encantas',
+      'Otaku', 'Báñate', 'Tqm'
+    ];
+    var wordQueue = [];
+    var lastWord = null;
+    var revealTimer = null;
+    var totalPetals = petals.length;
+    var fallenCount = 0;
+    var regrowTimer = null;
+
+    function refillQueue(){
+      wordQueue = words.slice();
+      for (var i = wordQueue.length - 1; i > 0; i--){
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = wordQueue[i]; wordQueue[i] = wordQueue[j]; wordQueue[j] = tmp;
+      }
+      if (wordQueue.length > 1 && wordQueue[0] === lastWord){
+        wordQueue.push(wordQueue.shift());
+      }
+    }
+
+    function pickWord(){
+      if (wordQueue.length === 0) refillQueue();
+      var w = wordQueue.shift();
+      lastWord = w;
+      return w;
+    }
+
+    function showReveal(text){
+      if (!reveal) return;
+      clearTimeout(revealTimer);
+      reveal.textContent = text;
+      reveal.classList.remove('show');
+      void reveal.offsetWidth;
+      reveal.classList.add('show');
+      revealTimer = setTimeout(function(){
+        reveal.classList.remove('show');
+      }, 2600);
+    }
+
+    function burst(fromEl){
+      if (reduce || !card || !fromEl) return;
+      var cardRect = card.getBoundingClientRect();
+      var petalRect = fromEl.getBoundingClientRect();
+      var originX = petalRect.left - cardRect.left + petalRect.width / 2;
+      var originY = petalRect.top - cardRect.top + petalRect.height / 2;
+      var count = 6;
+      for (var i = 0; i < count; i++){
+        var p = document.createElement('div');
+        p.className = 'burst-petal';
+        p.style.left = originX + 'px';
+        p.style.top = originY + 'px';
+        var angle = (Math.random() * 140 - 70);
+        var dist = 50 + Math.random() * 50;
+        p.style.setProperty('--bx', (Math.sin(angle * Math.PI / 180) * dist).toFixed(1) + 'px');
+        p.style.setProperty('--by', (60 + Math.random() * 60).toFixed(1) + 'px');
+        p.style.setProperty('--br', (Math.random() * 260) + 'deg');
+        p.style.animationDelay = (Math.random() * 0.12) + 's';
+        card.appendChild(p);
+        (function(el){
+          setTimeout(function(){ el.remove(); }, 1300);
+        })(p);
+      }
+    }
+
+    function regrowAll(){
+      petals.forEach(function(el, i){
+        setTimeout(function(){
+          el.classList.remove('gone');
+          el.classList.add('regrow');
+          setTimeout(function(){ el.classList.remove('regrow'); }, 640);
+        }, reduce ? 0 : i * 90);
+      });
+      fallenCount = 0;
+    }
+
+    function handlePetal(el){
+      if (el.classList.contains('falling') || el.classList.contains('gone')) return;
+
+      burst(el);
+      showReveal(pickWord());
+
+      el.classList.add('falling');
+
+      setTimeout(function(){
+        el.classList.remove('falling');
+        el.classList.add('gone');
+        fallenCount++;
+        if (fallenCount >= totalPetals){
+          clearTimeout(regrowTimer);
+          regrowTimer = setTimeout(regrowAll, reduce ? 300 : 1000);
+        }
+      }, reduce ? 0 : 900);
+    }
+
+    petals.forEach(function(el){
+      el.addEventListener('click', function(){ handlePetal(el); });
+      el.addEventListener('keydown', function(ev){
+        if (ev.key === 'Enter' || ev.key === ' '){
+          ev.preventDefault();
+          handlePetal(el);
+        }
+      });
+    });
+  } catch(e) {}
+})();
+</script>
+
+</body>
+</html>
